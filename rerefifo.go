@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/spf13/afero"
 )
@@ -68,11 +69,13 @@ func travelFS(afs afero.Afero, root string, processElement func(afero.Fs, string
 }
 
 func renameElement(fs afero.Fs, name string) {
-	newName := getNewName(name)
-	if newName != name {
+	base := filepath.Base(name)
+	newName := getNewName(base)
+	if newName != base {
 		//TODO: check for errors here
-		fmt.Printf("renaming %s to %s\n", name, newName)
-		fs.Rename(name, newName)
+		newNameAbs := filepath.Join(strings.TrimSuffix(name, base), newName)
+		fmt.Printf("renaming %s to %s\n", name, newNameAbs)
+		fs.Rename(name, newNameAbs)
 	}
 }
 
